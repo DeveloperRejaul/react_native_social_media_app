@@ -5,6 +5,14 @@ import { JwtModule } from '@nestjs/jwt';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { User } from './services/user/schema';
 import { UserModule } from './services/user/module';
+import { PostModule } from './services/post/module';
+import { CommentModule } from './services/comment/module';
+import { LikeModule } from './services/like/module';
+import { ShareModule } from './services/share/module';
+import { Post } from './services/post/schema';
+import { Like } from './services/like/schema';
+import { Share } from './services/share/schema';
+import { Comment } from './services/comment/schema';
 
 
 @Module({
@@ -19,10 +27,18 @@ import { UserModule } from './services/user/module';
       synchronize: true,
       autoLoadModels: true,
       models: [
-        User
+        User,
+        Post,
+        Like,
+        Share,
+        Comment,
       ],
     }),
     UserModule,
+    PostModule,
+    CommentModule,
+    LikeModule,
+    ShareModule,
     JwtModule.register({ global: true, secret: process.env.JWT_SECRET, signOptions: { expiresIn: '7d' } }),
   ],
   controllers: [AppController],
