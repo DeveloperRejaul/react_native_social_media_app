@@ -1,0 +1,46 @@
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    container_name: postgres_social
+    # volumes:
+    #   - ./pgdata:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    container_name:  pgadmin_social
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=pgadmin4
+    ports:
+      - '5050:80'
+    depends_on:
+      - db
+  app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name:  backend_social
+    environment:
+      # - PORT=${PORT} // variable 
+      - PORT=8000
+      - PG_HOST=postgres
+      - PG_PORT=5432
+      - PG_USER=postgres
+      - PG_PASS=postgres
+      - PG_NAME=postgres
+      - ORIGIN=http://localhost:8000,http://localhost:3001,https://localhost:3001,https://localhost
+      - COOKIE_KEY=school
+      - JWT_SECRET=school
+    ports:
+      - '8000:8000'
+    depends_on:
+      - db
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/upload:/app/upload
