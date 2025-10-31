@@ -21,6 +21,7 @@ services:
       - '5050:80'
     depends_on:
       - db
+
   app:
     build:
       context: ./backend
@@ -29,7 +30,7 @@ services:
     environment:
       # - PORT=${PORT} // variable 
       - PORT=8000
-      - PG_HOST=postgres
+      - PG_HOST=db
       - PG_PORT=5432
       - PG_USER=postgres
       - PG_PASS=postgres
@@ -44,3 +45,6 @@ services:
     volumes:
       - ./backend/src:/app/src
       - ./backend/upload:/app/upload
+# networks:
+#   backend:
+#     driver: bridge

@@ -23,7 +23,7 @@ const env = new Set(Object.keys(process.env));
 
 if (!requiredEnv.every((key) => env.has(key))) {
   console.error('Missing required environment variables');
-  // process.exit(1);
+  process.exit(1);
 }
 console.error('Environment variables successfully loaded');
 
@@ -49,7 +49,7 @@ async function bootstrap() {
       .setTitle('Social media app ')
       .setDescription('The social media app API description')
       .setVersion('1.0')
-      .addTag('school')
+      .addTag('social media')
       .build();
     const documentFactory = () => SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api', app, documentFactory);
