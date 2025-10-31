@@ -6,22 +6,6 @@ export class CreatePostDto {
 	@IsString()
 	@IsNotEmpty()
 	content: string;
-
-	@ApiProperty({ example: 'uuid-of-user', description: 'Author user id' })
-	@IsUUID()
-	userId: string;
 }
 
 export class UpdatePostDto extends PartialType(CreatePostDto) {}
-
-export class GetPostsDto {
-	@IsOptional()
-	@IsUUID()
-	userId?: string;
-
-	@IsOptional()
-	limit?: number;
-
-	@IsOptional()
-	offset?: number;
-}

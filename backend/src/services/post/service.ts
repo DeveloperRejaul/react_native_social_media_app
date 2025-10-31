@@ -1,20 +1,22 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Post } from './schema';
 import { User } from '../user/schema';
 import { Like } from '../like/schema';
 import { Comment } from '../comment/schema';
-import { Share } from '../share/schema';
-import { CreatePostDto, UpdatePostDto, GetPostsDto } from './dto';
+import { CreateCommentDto } from '../comment/dto';
+import { Query } from '../auth/query';
 
 @Injectable()
 export class PostService {
   constructor(
     @InjectModel(Post) private readonly model: typeof Post,
+    @InjectModel(Like) private readonly like: typeof Like,
+    @InjectModel(Comment) private readonly comment: typeof Comment,
   ) {}
 
-  async create(dto: CreatePostDto) {
-    const post = await this.model.create(dto as any);
+  async create(dto) {
+    const post = await this.model.create(dto);
     if (!post.id) throw new Error('Failed to create post');
     return {
       message: 'Post created successfully',
@@ -22,21 +24,18 @@ export class PostService {
     };
   }
 
-  async findAll(dto: GetPostsDto = {}) {
-    const { userId, limit = 10, offset = 0 } = dto;
-    const where = userId ? { userId } : {};
-
+  @Query()
+  async findAll(user, query, options?) {
     const posts = await this.model.findAll({
-      where,
+      ...options,
+      where :{
+        userId: user.id
+      },
       include: [
         { model: User, attributes: ['id', 'name', 'email'] },
         { model: Like, attributes: ['id', 'userId'] },
         { model: Comment, attributes: ['id', 'content', 'userId'] },
-        { model: Share, attributes: ['id', 'message', 'userId'] },
-      ],
-      limit,
-      offset,
-      order: [['createdAt', 'DESC']],
+      ]
     });
 
     return {
@@ -52,25 +51,33 @@ export class PostService {
         { model: User, attributes: ['id', 'name', 'email'] },
         { model: Like, attributes: ['id', 'userId'] },
         { model: Comment, attributes: ['id', 'content', 'userId'] },
-        { model: Share, attributes: ['id', 'message', 'userId'] },
       ],
     });
 
     return post;
   }
 
-  async update(id: string, dto: UpdatePostDto) {
-    await this.model.update(dto, { where: { id } });
+  async createComment (dto: CreateCommentDto, postId:string, userId:string) {
+    const comment = await this.comment.create({...dto, userId, postId} as any);
+    if (!comment.id) throw new Error('Failed to create comment');
     return {
-      message: 'Post updated successfully',
-      post: await this.findOne(id),
+        message: 'Comment created successfully',
     };
   }
 
-  async remove(id: string) {
-    await this.model.destroy({ where: { id } });
+  async createLike (postId:string, userId:string) {
+    const existing = await this.like.findOne({
+        where: { userId: userId, postId: postId },
+    });
+    
+    if (existing) {
+        throw new BadRequestException('User has already liked this post');
+    }
+    
+    const like = await this.like.create({userId, postId} as any);
+    if (!like.id) throw new Error('Failed to create like');
     return {
-      message: 'Post deleted successfully',
+        message: 'Like created successfully',
     };
   }
 }

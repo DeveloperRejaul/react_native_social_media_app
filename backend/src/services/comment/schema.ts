@@ -16,7 +16,7 @@ import { Post } from '../post/schema';
 export class Comment extends Model<Comment> {
 	@IsUUID(4)
 	@PrimaryKey
-		@Column({ type: DataType.UUID, defaultValue: UUIDV4 })
+	@Column({ type: DataType.UUID, defaultValue: UUIDV4 })
 	declare id?: string;
 
 	@Column({ allowNull: false, type: DataType.TEXT })

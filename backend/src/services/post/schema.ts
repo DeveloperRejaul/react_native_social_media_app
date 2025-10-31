@@ -12,7 +12,6 @@ import {
 import { User } from '../user/schema';
 import { Like } from '../like/schema';
 import { Comment } from '../comment/schema';
-import { Share } from '../share/schema';
 import { UUIDV4 } from 'sequelize';
 
 @Table({ tableName: 'Posts' })
@@ -37,7 +36,4 @@ export class Post extends Model<Post> {
 
 	@HasMany(() => Comment)
 	comments: Comment[];
-
-	@HasMany(() => Share)
-	shares: Share[];
 }

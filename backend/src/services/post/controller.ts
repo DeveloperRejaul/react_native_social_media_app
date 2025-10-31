@@ -3,50 +3,53 @@ import {
   Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
   Query,
   UseGuards,
+  Param,
+  Put,
 } from '@nestjs/common';
 import { PostService } from './service';
-import { CreatePostDto, UpdatePostDto, GetPostsDto } from './dto';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { CreatePostDto } from './dto';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 import { AuthGuard } from '../../services/auth/auth-guard';
+import { CreateCommentDto } from '../comment/dto';
+import { AuthData, AuthUser } from 'src/decorators/auth';
 
 @ApiTags('posts')
 @Controller('posts')
-@UseGuards(AuthGuard)
 export class PostController {
   constructor(private readonly service: PostService) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new post' })
-  create(@Body() dto: CreatePostDto) {
-    return this.service.create(dto);
+  @UseGuards(AuthGuard)
+  create(@Body() dto: CreatePostDto, @AuthData('id') userId:string) {
+    return this.service.create({...dto, userId});
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all posts' })
-  findAll(@Query() dto: GetPostsDto) {
-    return this.service.findAll(dto);
+  @UseGuards(AuthGuard)
+  findAll(@AuthUser() user, @Query() query) {
+    return this.service.findAll(user, query);
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Get a post by id' })
-  findOne(@Param('id') id: string) {
-    return this.service.findOne(id);
+  @Put(':id/like')
+  @ApiOperation({ summary: 'Like a post' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @ApiParam({ name: 'id', type: 'string', description: 'Post ID to like' })
+  createLike(@Param('id') postId: string, @AuthData('id') userId:string) {
+    return this.service.createLike(postId, userId);
   }
 
-  @Patch(':id')
-  @ApiOperation({ summary: 'Update a post' })
-  update(@Param('id') id: string, @Body() dto: UpdatePostDto) {
-    return this.service.update(id, dto);
-  }
 
-  @Delete(':id')
-  @ApiOperation({ summary: 'Delete a post' })
-  remove(@Param('id') id: string) {
-    return this.service.remove(id);
+  @Put(':id/comment')
+  @ApiOperation({ summary: 'Comment on a post' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @ApiParam({ name: 'id', type: 'string', description: 'Post ID to comment on' })
+  createComment(@Param('id') postId: string, @Body() dto: CreateCommentDto, @AuthData('id') userId:string) {
+    return this.service.createComment(dto, postId, userId);
   }
 }
