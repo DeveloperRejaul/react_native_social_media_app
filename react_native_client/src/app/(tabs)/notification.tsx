@@ -6,9 +6,9 @@ import { gStyles } from '@/src/core/styles/styles'
 export default function Profile() {
   return (
     <View style={{flex: 1}}>
-        <Header title='Profile'/>
+        <Header title='Notification'/>
         <View style={gStyles.container}>
-            <Text>profile</Text>
+            <Text>Notification</Text>
         </View>
     </View>
   )
