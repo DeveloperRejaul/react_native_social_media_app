@@ -77,8 +77,6 @@ export const api = createApi({
     }),
     getPosts: builder.query<PostsResponse, {userId: null | string}>({
       query: ({userId}) => {
-         console.log(userId);
-        
        let url = '/posts?page=1&limit=10'
        if(userId) {
         url += `&userId=${userId}`
@@ -204,11 +202,6 @@ export const api = createApi({
         return "/auth/users"
       },
     }),
-    getPostByUser: builder.query({
-      query(arg) {
-        return ``
-      },
-    })
   }),
 })
 

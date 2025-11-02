@@ -1,5 +1,5 @@
-/* eslint-disable react/jsx-no-undef */
-import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native'
+ 
+import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native'
 import React, { useState } from 'react'
 import Header from '@/src/core/components/Header'
 import { gStyles } from '@/src/core/styles/styles'
@@ -86,7 +86,6 @@ export default function Index() {
             keyExtractor={(item, index) => item.id.toString() + index}
             onEndReachedThreshold={0.1}
             contentContainerStyle={styles.container}
-            // @ts-ignore
             ListEmptyComponent={(!data && (isLoading || isFetching)) ? <ScreenLoading style={styles.empty}/> : <Text style={styles.empty}>No data found</Text>}
             ListFooterComponent={(res.isLoading || res.isFetching) ? <ActivityIndicator size="small" color="#000" /> : null}
             />
@@ -95,7 +94,7 @@ export default function Index() {
   )
 }
 
-
+function Empty () {}
 
 function ScreenLoading(props: ScreenLoadingProps) {
   return (

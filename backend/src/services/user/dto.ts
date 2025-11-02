@@ -13,7 +13,7 @@ export class CreateUserDto {
 
   @ApiProperty({ example: 'StrongPassword123!', description: 'User password (min 8 chars)' })
   @IsString()
-  @MinLength(8)
+  @MinLength(6)
   password: string;
 }
 

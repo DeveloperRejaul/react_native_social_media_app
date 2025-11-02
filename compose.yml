@@ -35,7 +35,7 @@ services:
       - PG_USER=postgres
       - PG_PASS=postgres
       - PG_NAME=postgres
-      - ORIGIN=http://localhost:8000,http://localhost:3001,https://localhost:3001,https://localhost
+      - ORIGIN=http://localhost:8000,http://localhost:3001,https://localhost:3001,https://localhost,http://192.168.68.105:8081
       - COOKIE_KEY=school
       - JWT_SECRET=school
     ports:

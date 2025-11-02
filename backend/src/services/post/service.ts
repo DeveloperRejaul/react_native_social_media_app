@@ -26,15 +26,20 @@ export class PostService {
 
   @Query()
   async findAll(user, query, options?) {
+    console.log(query);
+    
+    const userQuery = query?.userId ? {
+      where:{
+        userId: query.userId
+      }
+    } : {}
     const posts = await this.model.findAll({
       ...options,
-      where :{
-        userId: user.id
-      },
+      ...userQuery,
       include: [
         { model: User, attributes: ['id', 'name', 'email'] },
-        { model: Like, attributes: ['id', 'userId'] },
-        { model: Comment, attributes: ['id', 'content', 'userId'] },
+        { model: Like, attributes: ['id', 'userId'], include: {model: User, attributes: ['name']}},
+        { model: Comment, attributes: ['id', 'content', 'userId'], include: {model: User, attributes: ['name']} },
       ]
     });
 
@@ -62,6 +67,7 @@ export class PostService {
     if (!comment.id) throw new Error('Failed to create comment');
     return {
         message: 'Comment created successfully',
+        data: await this.findComment(comment.id),
     };
   }
 
@@ -71,13 +77,22 @@ export class PostService {
     });
     
     if (existing) {
-        throw new BadRequestException('User has already liked this post');
+        throw new BadRequestException('You has already liked this post');
     }
     
     const like = await this.like.create({userId, postId} as any);
     if (!like.id) throw new Error('Failed to create like');
+    
     return {
         message: 'Like created successfully',
+        data: await this.findLike(like.id),
     };
   }
+
+  async findLike (id:string){
+    return this.like.findOne({where:{id}, include:{ model: User, attributes: ['id', 'name', 'email'] }})
+  } 
+  async findComment (id:string){
+    return this.comment.findOne({where:{id}, include:{ model: User, attributes: ['id', 'name', 'email'] }})
+  } 
 }

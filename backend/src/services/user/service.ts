@@ -72,4 +72,12 @@ export class UserService {
         message: 'Login successful',
     }
   }
+  
+  async getUsers() {
+    const users = await this.model.findAll({attributes:['name', 'id']});
+    return {
+        message: 'users get successful',
+        data: users,
+    }
+  }
 }

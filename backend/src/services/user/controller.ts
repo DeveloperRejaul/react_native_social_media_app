@@ -45,4 +45,14 @@ export class UserController {
   async me(@AuthUser() user) {
     return this.service.me(user);
   }
+  
+  @Get('users')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get all users' })
+  @ApiResponse({ status: 200, description: 'all User get successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async getUsers() {
+    return this.service.getUsers();
+  }
 }
